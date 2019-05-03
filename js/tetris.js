@@ -58,21 +58,32 @@ document.addEventListener("keyup", keyUpHandler, false);
 function keyDownHandler(e) {
   if (e.key == "Right" || e.key == "ArrowRight") {
     rightPressed = true;
-    movingPiece.moveRight();
+    checkMovingPiece();
+    if (collider.canMoveRight(movingPiece)) {
+      movingPiece.moveRight();
+    }
   } else if (e.key == "Left" || e.key == "ArrowLeft") {
     leftPressed = true;
-    movingPiece.moveLeft();
+    checkMovingPiece();
+    if (collider.canMoveLeft(movingPiece)) {
+      movingPiece.moveLeft();
+    }
   } else if (e.key == "Up" || e.key == "ArrowUp") {
     upPressed = true;
+    checkMovingPiece();
     movingPiece.turnRight();
   } else if (e.key == "Down" || e.key == "ArrowDown") {
     downPressed = true;
-    checkMovingPiece(); 
-    if(collider.canMoveDown(movingPiece)){
-        movingPiece.moveDown();
+    checkMovingPiece();
+    if (collider.canMoveDown(movingPiece)) {
+      movingPiece.moveDown();
     }
-  } else if (e.key == "Space") {
+  } else if (e.key == " " || e.key == "Space") {
     spacePressed = true;
+    checkMovingPiece();
+    while (collider.canMoveDown(movingPiece)) {
+      movingPiece.moveDown();
+    }
   }
 }
 function keyUpHandler(e) {
@@ -216,10 +227,26 @@ class Collider {
     }
     return true;
   }
-  canMoveLeft() {
+  canMoveLeft(block) {
+    var cells = block.cells;
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i].col - 1 < 0) {
+        return false;
+      } else if (this._map[cells[i].col - 1][cells[i].row]) {
+        return false;
+      }
+    }
     return true;
   }
-  canMoveRight() {
+  canMoveRight(block) {
+    var cells = block.cells;
+    for (var i = 0; i < cells.length; i++) {
+      if (cells[i].col + 2 > this._map.length) {
+        return false;
+      } else if (this._map[cells[i].col + 1][cells[i].row]) {
+        return false;
+      }
+    }
     return true;
   }
   stop(block) {
@@ -240,7 +267,7 @@ class Collider {
   }
 }
 function checkMovingPiece() {
-    movingPiece = movingPiece || createBlock();
+  movingPiece = movingPiece || createBlock();
   blocks.add(movingPiece);
 }
 function drawCanvas() {
@@ -253,14 +280,12 @@ function moveblocks() {
   for (const block of blocks) {
     if (!collider.canMoveDown(block) && block.isMoving) {
       console.log("got here 2");
-
       collider.stop(block);
       movingPiece = false;
       return;
-    } else if (!block.isMoving){
-        continue;
-    }
-    else {
+    } else if (!block.isMoving) {
+      continue;
+    } else {
       block.moveDown();
     }
   }
