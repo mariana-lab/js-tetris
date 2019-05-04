@@ -18,7 +18,7 @@ var pieces = {
   L: {
     columns: [0, 0, 0, 1],
     rows: [0, 1, 2, 2],
-    color: "#"
+    color: "#EDAAAA"
   },
   L_INV: {
     columns: [0, 0, 0, -1],
@@ -262,6 +262,14 @@ class Collider {
       this._map[cell.col][cell.row] = false;
     });
   }
+  isRowFull(row){
+    for(let col = 0; col < this._map.length; col++){
+      if(!this._map[col][row]){
+        return false;
+      }
+    }
+    return true;
+  }
   get map() {
     return this._map;
   }
@@ -279,7 +287,6 @@ function moveblocks() {
   //move only moving pieces
   for (const block of blocks) {
     if (!collider.canMoveDown(block) && block.isMoving) {
-      console.log("got here 2");
       collider.stop(block);
       movingPiece = false;
       return;
@@ -291,8 +298,22 @@ function moveblocks() {
   }
 }
 
+function cleanRow(row){
+  console.log('cleaned row ' + row);
+}
+
+function checkFullRows(){
+  for (let i = 0; i < nPiecesLong; i++) {
+      if(collider.isRowFull(i)){
+        cleanRow(i);
+      }    
+  }
+}
+
+
 function cicle() {
   checkMovingPiece();
+  checkFullRows();
   drawCanvas();
   moveblocks();
 }
