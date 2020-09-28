@@ -299,7 +299,13 @@ function moveblocks() {
 }
 
 function cleanRow(row){
-  console.log('cleaned row ' + row);
+  blocks.forEach(block => {
+    block.cells = block.cells.filter(cell => cell.row != row);
+    collider.cleanMap(row);
+    //console.log(block.cells);
+    
+  });
+  
 }
 
 function checkFullRows(){
